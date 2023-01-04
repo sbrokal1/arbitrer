@@ -1,0 +1,39 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "sqlite"
+    url      = env("DATABASE_URL")
+}
+
+model Target {
+    id       Int       @id @default(autoincrement())
+    host     String
+    port     Int
+    name     String
+    commands Command[]
+}
+
+model Command {
+    id            Int     @id @default(autoincrement())
+    tag           String
+    offset        Float
+    conditionJson String?
+    argumentsJson String?
+    group         Group   @relation(fields: [groupId], references: [id])
+    groupId       Int
+    target        Target  @relation(fields: [targetId], references: [id])
+    targetId      Int
+    active        Boolean @default(true)
+}
+
+model Group {
+    id          Int       @id @default(autoincrement())
+    name        String
+    triggerJson String
+    commands    Command[]
+}
