@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import type { Command } from "@prisma/client";
-import osc from "osc-js";
+import osc from "../mods/osc-js";
 
 export type Trigger = {
   type: "timer";
@@ -19,14 +19,16 @@ export function commandToOscMessage(command: Command) {
   const args = command.argumentsJson
     ? (JSON.parse(command.argumentsJson) as Arguments)
     : [];
-  return new osc.Message(
+  const message = new osc.TypedMessage(
     command.tag,
-    ...args.map((arg) => {
+    args.map((arg) => {
       if (arg.type == "int") {
-        return Math.round(arg.value);
-      } else return arg.value;
-    })
+        return { type: "i", value: Math.round(arg.value) };
+      } else if (arg.type == "float") return { type: "f", value: arg.value };
+      else return { type: "s", value: arg.value };
+    }) as any
   );
+  return message;
 }
 
 type ShouldRunParams = {

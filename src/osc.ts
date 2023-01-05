@@ -1,5 +1,5 @@
 import type { Command, Target } from "@prisma/client";
-import OSC from "osc-js";
+import OSC from "./mods/osc-js";
 import { commandToOscMessage, shouldRunCommand } from "./prisma/helpers";
 
 export function sendMessages(
